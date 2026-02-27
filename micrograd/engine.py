@@ -2,7 +2,7 @@
 class Value:
     """ stores a single scalar value and its gradient """
 
-    def __init__(self, data, _children=(), _op=''):
+    def __init__(self, data, _children=(), _op=''):#在初始化的时候要有这个点的数据，还有他的孩子节点，对应操作
         self.data = data
         self.grad = 0
         # internal variables used for autograd graph construction
@@ -11,13 +11,13 @@ class Value:
         self._op = _op # the op that produced this node, for graphviz / debugging / etc
 
     def __add__(self, other):
-        other = other if isinstance(other, Value) else Value(other)
+        other = other if isinstance(other, Value) else Value(other)#实现常数加法
         out = Value(self.data + other.data, (self, other), '+')
 
         def _backward():
             self.grad += out.grad
-            other.grad += out.grad
-        out._backward = _backward
+            other.grad += out.grad#对于加法反向传播回去的时候求导就是1
+        out._backward = _backward#在最后out反向传播的时候可以调用加法的写好的_backward
 
         return out
 
@@ -42,7 +42,7 @@ class Value:
 
         return out
 
-    def relu(self):
+    def relu(self):#激活函数，常见激活函数没有本质区别
         out = Value(0 if self.data < 0 else self.data, (self,), 'ReLU')
 
         def _backward():
@@ -53,7 +53,7 @@ class Value:
 
     def backward(self):
 
-        # topological order all of the children in the graph
+        # topological order all of the children in the graph，拓扑排序逆向取出来
         topo = []
         visited = set()
         def build_topo(v):
