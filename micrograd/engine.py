@@ -16,7 +16,7 @@ class Value:
 
         def _backward():
             self.grad += out.grad
-            other.grad += out.grad#对于加法反向传播回去的时候求导就是1
+            other.grad += out.grad#对于加法反向传播回去的时候求导就是1，并且为了处理多元变量，避免被覆盖
         out._backward = _backward#在最后out反向传播的时候可以调用加法的写好的_backward
 
         return out
